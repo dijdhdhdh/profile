@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .profile-img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            margin: 20px auto;
+            display: none; /* Hide until image is selected */
+            border-radius: 50%; /* Make the image round */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Add shadow to the image */
+            transition: all 0.3s ease; /* Smooth transition when image changes */
+        }
+        form input {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+        form button {
+            padding: 14px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        form button:hover {
+            background-color: #45a049;
+            transform: scale(1.05); /* Slightly enlarge button on hover */
+        }
+        .edit-profile-button {
+            padding: 16px 24px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+            transition: background-color 0.3s, transform 0.3s;
+            width: 100%;
+        }
+        .edit-profile-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05); /* Slightly enlarge button on hover */
+        }
+        .ok-button {
+            padding: 16px 24px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            margin-top: 20px;
+            transition: background-color 0.3s, transform 0.3s;
+            width: 100%;
+        }
+        .ok-button:hover {
+            background-color: #218838;
+            transform: scale(1.05); /* Slightly enlarge button on hover */
+        }
+        .hidden {
+            display: none;
+        }
+        /* Add smooth transition effect for profile image */
+        .profile-img {
+            transition: transform 0.3s ease;
+        }
+        .profile-img:hover {
+            transform: scale(1.1); /* Zoom in on hover */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Your Profile</h1>
+        
+        <form id="profileForm">
+            <input type="file" id="profileImage" accept="image/*"><br>
+            <div style="display: flex; justify-content: center;">
+                <img id="outputImage" class="profile-img" src="default-image.jpg" alt="Profile Picture">
+            </div>
+
+            <input type="text" id="name" placeholder="Name"><br>
+            <input type="number" id="year" placeholder="Year of Study" min="1"><br>
+            <input type="text" id="major" placeholder="Major"><br>
+            <input type="text" id="address" placeholder="Contact"><br>
+            <button type="submit">Create Profile</button>
+        </form>
+
+        <div id="profileOutput" class="hidden">
+            <h2>Your Profile</h2>
+            <div style="display: flex; justify-content: center;">
+                <img id="finalImage" class="profile-img" src="default-image.jpg" alt="Profile Picture">
+            </div>
+            <p id="outputName" class="hidden"></p>
+            <p id="outputYear" class="hidden"></p>
+            <p id="outputMajor" class="hidden"></p>
+            <p id="outputAddress" class="hidden"></p>
+            <button id="editProfile" class="edit-profile-button">Edit Profile</button>
+            <button id="okButton" class="ok-button hidden">OK</button> <!-- Added OK button -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("profileImage").addEventListener("change", function(event) 
+        {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) 
+                {
+                    const outputImage = document.getElementById("outputImage");
+                    outputImage.src = e.target.result;
+                    outputImage.style.display = "block"; // Show the image after choosing
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        document.getElementById("profileForm").addEventListener("submit", function(event) 
+        {
+            event.preventDefault();
+            document.querySelector('h1').style.display = 'none';
+
+            const name = document.getElementById("name").value.trim();
+            const year = document.getElementById("year").value.trim();
+            const major = document.getElementById("major").value.trim();
+            const address = document.getElementById("address").value.trim();
+            const profileImage = document.getElementById("outputImage").src;
+
+            localStorage.setItem("name", name);
+            localStorage.setItem("year", year);
+            localStorage.setItem("major", major);
+            localStorage.setItem("address", address);
+            localStorage.setItem("profileImage", profileImage);
+
+            document.getElementById("profileOutput").classList.remove("hidden");
+            document.getElementById("profileForm").classList.add("hidden");
+
+            function updateField(elementId, label, value) {
+                const element = document.getElementById(elementId);
+                if (value) 
+                {
+                    element.textContent = `${label} ${value}`;
+                    element.classList.remove("hidden");
+                } else 
+                {
+                    element.classList.add("hidden");
+                }
+            }
+
+            updateField("outputName", "Name:", name);
+            updateField("outputYear", "Year of Study:", year);
+            updateField("outputMajor", "Major:", major);
+            updateField("outputAddress", "Contact:", address);
+
+            const finalImage = document.getElementById("finalImage");
+            if (profileImage && profileImage !== "default-image.jpg") 
+            {
+                finalImage.src = profileImage;
+                finalImage.style.display = "block";
+            } else 
+            {
+                finalImage.src = "default-image.jpg";
+                finalImage.style.display = "block";
+            }
+
+            // Show the "OK" button after profile creation
+            document.getElementById("okButton").classList.remove("hidden");
+        });
+
+        window.onload = function() 
+        {
+            const name = localStorage.getItem("name");
+            const year = localStorage.getItem("year");
+            const major = localStorage.getItem("major");
+            const address = localStorage.getItem("address");
+            const profileImage = localStorage.getItem("profileImage");
+
+            if (name && year && major && address) 
+            {
+                document.getElementById("outputName").textContent = `Name: ${name}`;
+                document.getElementById("outputYear").textContent = `Year of Study: ${year}`;
+                document.getElementById("outputMajor").textContent = `Major: ${major}`;
+                document.getElementById("outputAddress").textContent = `Contact: ${address}`;
+
+                if (profileImage && profileImage !== "default-image.jpg") 
+                {
+                    const finalImage = document.getElementById("finalImage");
+                    finalImage.src = profileImage;
+                    finalImage.style.display = "block";
+                }
+            }
+        };
+
+        document.getElementById("editProfile").addEventListener("click", function() 
+        {
+            document.getElementById("profileOutput").classList.add("hidden");
+            document.getElementById("profileForm").classList.remove("hidden");
+            document.querySelector('h1').style.display = 'block';
+        });
+
+        document.getElementById("okButton").addEventListener("click", function() {
+            alert("Profile confirmed!");
+            // You can add additional behavior here, like redirecting to another page
+        });
+    </script>
+</body>
+</html>
